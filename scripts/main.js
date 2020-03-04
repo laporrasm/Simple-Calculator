@@ -1,73 +1,64 @@
-let operationArray = [];
-
-let operate = function(a) {
-	switch (a[1]) {
-		case "+":
-			return a[0] + a[2];
-		case "-":
-			return a[0] - a[2];
+let transformOp = (op) => {
+	switch (op) {
 		case "x":
-			return a[0] * a[2];
-		case "/":
-			return a[0] / a[2];
+			return '*';
 		case "^":
-			return Math.pow(a[0], a[2]);
-		case "%":
-			return a[0] % a[2];
+			return '**';
+		default:
+			return op;
 	}
 };
 
+// Atrapa el botón de clear
 let clearButton = document.querySelector(".calculator__button--clear");
 
+// Atrapa el botón de igual
 let equalButton = document.querySelector(".calculator__button--equal");
 
+// Atrapa todos los botones de operaciones
 let operationButtons = document.querySelectorAll(".calculator__button--op");
 
+// Atrapa en un objeto todos los botones de números
 let numberButtons = document.querySelectorAll(".calculator__button--number");
 
+// Atrapa la pantalla de la calculadora
 let screen = document.querySelector(".calculator__screen");
 
-let screenText = "";
+// Inicializa la memoria
+let memory = "";
 
 numberButtons.forEach(button =>
 	button.addEventListener("click", function(event) {
-		screenText = screenText + this.innerText;
-		screen.innerText = screenText;
+		memory = memory + this.innerText;
+		screen.innerText = memory;
+
+		console.log(memory);
 	})
 );
 
 operationButtons.forEach(button =>
 	button.addEventListener("click", function(event) {
-		operationArray.push(parseFloat(screen.innerText));
 
-		if (operationArray.length >= 3) {
-			let result = operate(operationArray);
-			operationArray = [];
-			operationArray.push(result);
-			screen.innerText = result;
+		if (memory.length == 0) memory = '0';
+
+		if (isNaN(memory.slice(-1))) {
+			memory = memory.substr(0, memory.length - 1) + transformOp(this.innerText);
 		} else {
-			screen.innerText = "0";
+			memory = memory + transformOp(this.innerText);
 		}
-		operationArray.push(this.innerText);
-		screenText = "";
-		console.log(operationArray);
+		screen.innerText = 0;
+		console.log(memory);
 	})
 );
 
 equalButton.addEventListener("click", function(event) {
-	if (operationArray.length < 2) {
-		return ;
-	}
-	operationArray.push(parseFloat(screen.innerText));
-	screen.innerText = operate(operationArray);
-	screenText = "";
-	operationArray = [];
-	console.log(operationArray);
+	memory = `${eval(memory)}`;
+	console.log(memory);
+	screen.innerText = memory;
+
 });
 
 clearButton.addEventListener("click", function(event) {
 	screen.innerText = "0";
-	screenText = "";
-	operationArray = [];
-	console.log(operationArray);
+	memory = "";
 })
